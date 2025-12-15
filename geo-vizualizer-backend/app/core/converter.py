@@ -2,16 +2,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import (
-    Curve,
-    EffectiveFormationThickness,
-    FormationThickness,
-    Well,
-    WellTrack,
-)
+from app import crud
 
 
 class Converter:
@@ -90,7 +83,7 @@ class Converter:
                     if numeric_type in (0.0, 1.0):
                         type_value = str(int(numeric_type))
                 except ValueError:
-                    type_value = ""
+                    type_value = None
 
                 curves.append(
                     {
@@ -104,32 +97,15 @@ class Converter:
 
         well_id = well_data["id"]
 
-        # Upsert well
-        existing = await db.get(Well, well_id)
-        if existing:
-            existing.name = well_data["name"]
-            existing.start_measured_depth = well_data["start_measured_depth"]
-            existing.end_measured_depth = well_data["end_measured_depth"]
-            await db.execute(delete(Curve).where(Curve.well_id == well_id))
-        else:
-            db.add(
-                Well(
-                    id=well_id,
-                    name=well_data["name"],
-                    start_measured_depth=well_data["start_measured_depth"],
-                    end_measured_depth=well_data["end_measured_depth"],
-                )
-            )
-
-        # Add curves
-        for c in curves:
-            db.add(
-                Curve(
-                    well_id=well_id,
-                    measured_depth=c["measured_depth"],
-                    type=c["type"],
-                )
-            )
+        # Upsert well and replace curves
+        await crud.wells.upsert(
+            db,
+            well_id=well_id,
+            name=well_data["name"],
+            start_measured_depth=well_data["start_measured_depth"],
+            end_measured_depth=well_data["end_measured_depth"],
+        )
+        await crud.curves.replace_for_well(db, well_id=well_id, curves=curves)
 
         await db.commit()
 
@@ -138,6 +114,16 @@ class Converter:
             "well_name": well_data["name"],
             "curves_saved": len(curves),
         }
+
+    async def convert_well_file_batch(self, db: AsyncSession, *, file_paths: list[str]) -> list[dict[str, Any]]:
+        """
+        Process multiple well files sequentially and return per-file summaries.
+        """
+        results: list[dict[str, Any]] = []
+        for path in file_paths:
+            result = await self.convert_well_file(db, file_path=path)
+            results.append(result)
+        return results
 
     async def convert_welltrack(self, db: AsyncSession, *, file_path: str) -> dict[str, Any]:
         """
@@ -212,26 +198,14 @@ class Converter:
             wells_processed += 1
             well_name = well_names.get(well_id, f"WELL_{well_id}")
 
-            # Ensure well exists (create minimal stub if missing)
-            existing = await db.get(Well, well_id)
-            if not existing:
-                db.add(Well(id=well_id, name=well_name))
-                await db.flush()
-
-            # Replace existing tracks for this well
-            await db.execute(delete(WellTrack).where(WellTrack.well_id == well_id))
-
-            for rec in records:
-                db.add(
-                    WellTrack(
-                        well_id=well_id,
-                        lat=rec["lat"],
-                        lon=rec["lon"],
-                        absolute_depth=rec["absolute_depth"],
-                        measured_depth=rec["measured_depth"],
-                    )
-                )
-            total_rows += len(records)
+            await crud.wells.upsert(
+                db,
+                well_id=well_id,
+                name=well_name,
+                start_measured_depth=None,
+                end_measured_depth=None,
+            )
+            total_rows += await crud.welltracks.replace_for_well(db, well_id=well_id, tracks=records)
 
         await db.commit()
 
@@ -275,21 +249,26 @@ class Converter:
             except ValueError:
                 thickness = None
 
-            existing = await db.get(Well, well_id)
-            if not existing:
-                db.add(Well(id=well_id, name=well_token))
-                await db.flush()
-
-            db.add(
-                FormationThickness(
-                    well_id=well_id,
-                    lat=lat,
-                    lon=lon,
-                    absolute_depth=absolute_depth,
-                    thickness=thickness,
-                )
+            await crud.wells.upsert(
+                db,
+                well_id=well_id,
+                name=well_token,
+                start_measured_depth=None,
+                end_measured_depth=None,
             )
-            total_rows += 1
+
+            total_rows += await crud.formation_thickness.add_many(
+                db,
+                records=[
+                    {
+                        "well_id": well_id,
+                        "lat": lat,
+                        "lon": lon,
+                        "absolute_depth": absolute_depth,
+                        "thickness": thickness,
+                    }
+                ],
+            )
 
         await db.commit()
 
@@ -332,21 +311,26 @@ class Converter:
             except ValueError:
                 thickness = None
 
-            existing = await db.get(Well, well_id)
-            if not existing:
-                db.add(Well(id=well_id, name=well_token))
-                await db.flush()
-
-            db.add(
-                EffectiveFormationThickness(
-                    well_id=well_id,
-                    lat=lat,
-                    lon=lon,
-                    absolute_depth=absolute_depth,
-                    thickness=thickness,
-                )
+            await crud.wells.upsert(
+                db,
+                well_id=well_id,
+                name=well_token,
+                start_measured_depth=None,
+                end_measured_depth=None,
             )
-            total_rows += 1
+
+            total_rows += await crud.effective_formation_thickness.add_many(
+                db,
+                records=[
+                    {
+                        "well_id": well_id,
+                        "lat": lat,
+                        "lon": lon,
+                        "absolute_depth": absolute_depth,
+                        "thickness": thickness,
+                    }
+                ],
+            )
 
         await db.commit()
 

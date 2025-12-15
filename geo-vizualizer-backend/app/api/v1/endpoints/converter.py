@@ -1,6 +1,7 @@
 import shutil
 import tempfile
 from pathlib import Path
+from typing import List
 
 from fastapi import APIRouter, Depends, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,6 +30,26 @@ async def convert_file(
     result = await converter.convert_well_file(db, file_path=str(input_path))
 
     return result
+
+
+@router.post("/convert/batch", status_code=status.HTTP_200_OK)
+async def convert_file_batch(
+    files: List[UploadFile],
+    db: AsyncSession = Depends(deps.get_db),
+) -> list[dict]:
+    """
+    Accept multiple well files, parse and persist them sequentially.
+    Returns a list of summaries.
+    """
+    temp_paths: list[str] = []
+    for file in files:
+        with tempfile.NamedTemporaryFile(delete=False) as tmp_in:
+            shutil.copyfileobj(file.file, tmp_in)
+            temp_paths.append(tmp_in.name)
+
+    converter = Converter()
+    results = await converter.convert_well_file_batch(db, file_paths=temp_paths)
+    return results
 
 
 @router.post("/convert/welltrack", status_code=status.HTTP_200_OK)
