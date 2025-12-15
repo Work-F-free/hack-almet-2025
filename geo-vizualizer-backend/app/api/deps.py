@@ -1,14 +1,14 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.session import get_session
 
 
-def get_db() -> Generator[None, None, None]:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
-    Placeholder dependency for a database session.
-    Replace with real session management when a database is added.
+    Yield an async database session for request-scoped use.
     """
-    try:
-        yield
-    finally:
-        return
-
+    async for session in get_session():
+        yield session
 

@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 
+from app.db.base import Base
+from app.db.session import engine
+
 from app.api.v1.api import api_router
 from app.core.config import settings
 
@@ -21,5 +24,14 @@ def healthcheck() -> dict[str, str]:
     Lightweight endpoint for uptime checks.
     """
     return {"status": "ok"}
+
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    # Import models so that metadata is populated before table creation
+    import app.models  # noqa: F401
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 

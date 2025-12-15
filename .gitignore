@@ -1,0 +1,42 @@
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Node / Frontend
+node_modules/
+*.log
+dist/
+build/
+.turbo/
+.parcel-cache/
+
+# Vite
+.vite/
+
+# Env
+.env
+.env.*
+
+# Coverage / reports
+coverage/
+.coverage*
+htmlcov/
+
+# Local data
+*.sqlite3
+*.db
+
+# Mac metadata
+._*
+
+
