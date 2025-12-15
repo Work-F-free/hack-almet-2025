@@ -1,0 +1,44 @@
+{
+  "hash": "83da4526",
+  "browserHash": "a6f1c149",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "f3f453cc",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "3ebad8d0",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "2789e02e",
+      "needsInterop": true
+    },
+    "@gravity-ui/uikit": {
+      "src": "../../node_modules/@gravity-ui/uikit/build/esm/index.js",
+      "file": "@gravity-ui_uikit.js",
+      "fileHash": "7dfd42a6",
+      "needsInterop": false
+    },
+    "react-router": {
+      "src": "../../node_modules/react-router/dist/development/index.mjs",
+      "file": "react-router.js",
+      "fileHash": "6183cb43",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-5MP3KQXS": {
+      "file": "chunk-5MP3KQXS.js"
+    },
+    "chunk-AGER7HZE": {
+      "file": "chunk-AGER7HZE.js"
+    }
+  }
+}

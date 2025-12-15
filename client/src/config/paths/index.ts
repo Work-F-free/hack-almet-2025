@@ -9,8 +9,15 @@ export type PathItem<TParams extends string | undefined = undefined> = TParams e
       };
 
 export const Paths = {
-    dashboard: {
+    home: {
         path: '/',
         getHref: () => '/',
     } satisfies PathItem,
+
+    dashboard: {
+        path: '/dashboard',
+        getHref: () => '/dashboard',
+    } satisfies PathItem,
 } as const;
+
+export type AppPath = keyof typeof Paths;

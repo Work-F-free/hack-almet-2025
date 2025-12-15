@@ -5,6 +5,7 @@ import '@gravity-ui/uikit/styles/styles.css';
 import App from './app';
 
 import './config/style/themer.scss';
+import './config/style/config.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
