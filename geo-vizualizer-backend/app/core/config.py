@@ -19,6 +19,7 @@ class Settings(BaseModel):
     DB_POOL_SIZE: int
     DB_MAX_OVERFLOW: int
     DB_POOL_TIMEOUT: int
+    FRONTEND_HOST: str
 
     @property
     def DATABASE_URL(self) -> str:
