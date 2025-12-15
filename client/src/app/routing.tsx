@@ -4,6 +4,10 @@ import {Paths} from '@/config/paths';
 export const createAppRouter = () =>
     createBrowserRouter([
         {
+            path: Paths.home.path,
+            lazy: () => import('./routing/home').then((m) => ({Component: m.default})),
+        },
+        {
             path: Paths.dashboard.path,
             lazy: () => import('./routing/dashboard').then((m) => ({Component: m.default})),
         },
