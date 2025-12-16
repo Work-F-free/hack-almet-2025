@@ -1,0 +1,52 @@
+.card {
+    padding: 12px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+}
+
+.col {
+    min-width: 240px;
+    display: grid;
+    gap: 6px;
+}
+
+.switches {
+    display: grid;
+    gap: 10px;
+    padding-left: 6px;
+}
+
+.slice {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: auto 220px 1fr;
+    align-items: center;
+}
+
+.sliceMode {
+    min-width: 220px;
+}
+
+.sliderWrap {
+    display: grid;
+    gap: 6px;
+}
+
+.slider {
+    width: 100%;
+}
+
+.sliderMeta {
+    display: flex;
+    justify-content: space-between;
+}
+
+.hint {
+    margin-top: 8px;
+}

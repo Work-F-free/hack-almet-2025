@@ -1,4 +1,10 @@
 .rootLayout_wrapper {
     margin-left: 16px;
     margin-top: 8px;
+
+    height: calc(100vh - 8px);
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
 }
