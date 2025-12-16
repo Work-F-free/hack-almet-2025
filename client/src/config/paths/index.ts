@@ -18,6 +18,10 @@ export const Paths = {
         path: '/dashboard',
         getHref: () => '/dashboard',
     } satisfies PathItem,
+    upload: {
+        path: '/upload',
+        getHref: () => '/upload',
+    } satisfies PathItem,
 } as const;
 
 export type AppPath = keyof typeof Paths;

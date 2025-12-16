@@ -11,6 +11,10 @@ export const createAppRouter = () =>
             path: Paths.dashboard.path,
             lazy: () => import('./routing/dashboard').then((m) => ({Component: m.default})),
         },
+        {
+            path: Paths.upload.path,
+            lazy: () => import('./routing/upload').then((m) => ({Component: m.default})),
+        },
     ]);
 
 export const AppRouter = () => {
