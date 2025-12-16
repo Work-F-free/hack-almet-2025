@@ -1,39 +1,32 @@
-// upload-queue.ts
 import {useEffect, useMemo, useRef} from 'react';
 import {useMutation} from '@tanstack/react-query';
+import {CoreServiceAPI} from '@/config/api';
+import {useToaster} from '@gravity-ui/uikit';
 
 export type UploadStatus = 'queued' | 'uploading' | 'uploaded' | 'error';
 
 export interface UploadItem {
     id: string;
     file: File;
-    uploadProgress: number; // 0..100
+    uploadProgress: number;
     status: UploadStatus;
     errorMessage?: string;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/** Заглушка: 2-3 секунды, 25% шанс ошибки */
-export async function fakeUpload(file: File): Promise<string> {
-    await sleep(2000 + Math.random() * 1000);
-    if (Math.random() < 0.25) {
-        throw new Error('Не удалось загрузить файл (заглушка)');
-    }
-    return `ok:${file.name}`;
-}
-
-/** Очередь загрузок с ограничением параллельности */
 export function useUploadQueue(
     items: UploadItem[],
     setItems: React.Dispatch<React.SetStateAction<UploadItem[]>>,
     concurrency = 3,
+    isPredicted,
 ) {
+    const api = new CoreServiceAPI();
+    const {add: addToast} = useToaster();
+
     const mutation = useMutation({
-        mutationFn: async ({file}: {id: string; file: File}) => fakeUpload(file),
+        mutationFn: async ({file}: {id: string; file: File}) =>
+            isPredicted ? api.predictedFileUploading(file) : api.fileUploading(file),
     });
 
-    // Для фейк-прогресса и защиты от обновлений после удаления
     const timersRef = useRef<Map<string, number>>(new Map());
     const removedRef = useRef<Set<string>>(new Set());
 
@@ -57,8 +50,6 @@ export function useUploadQueue(
                 prev.map((it) => {
                     if (it.id !== id) return it;
                     if (it.status !== 'uploading') return it;
-
-                    // растём до 90%, дальше ждём завершения
                     const next = Math.min(90, it.uploadProgress + 3 + Math.random() * 7);
                     return {...it, uploadProgress: Math.floor(next)};
                 }),
@@ -81,7 +72,6 @@ export function useUploadQueue(
         const toStart = queued.slice(0, slots);
 
         toStart.forEach((item) => {
-            // помечаем как uploading
             setItems((prev) =>
                 prev.map((it) =>
                     it.id === item.id
@@ -124,9 +114,14 @@ export function useUploadQueue(
                                 : it,
                         ),
                     );
+                    addToast({
+                        title: 'Ошибка загрузки файла',
+                        name: 'name',
+                        theme: 'danger',
+                        content: `Не удалось загрузить файл "${item.file.name}". ${message}`,
+                    });
                 });
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [queued, uploadingCount, concurrency]);
 
     return {markRemoved};
