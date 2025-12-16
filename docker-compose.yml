@@ -17,6 +17,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
+  api:
+    env_file:
+      - .env
+    build:
+      context: ./geo-vizualizer-backend
+      dockerfile: Dockerfile
+    container_name: fastapi-service
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
 
 volumes:
   pgdata:
