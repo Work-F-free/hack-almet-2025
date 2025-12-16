@@ -8,7 +8,9 @@ const DashboardRoute = () => {
     return (
         <RootLayout>
             <Card className={cls.dashboard}>
-                <ThreeDimensional />
+                <div className={cls.content}>
+                    <ThreeDimensional />
+                </div>
             </Card>
         </RootLayout>
     );

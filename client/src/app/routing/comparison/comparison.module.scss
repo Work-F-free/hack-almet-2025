@@ -1,0 +1,9 @@
+.page {
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+    padding: 0;
+}

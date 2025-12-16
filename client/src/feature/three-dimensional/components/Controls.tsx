@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 import {Card, Select, Slider, Switch, Text} from '@gravity-ui/uikit';
 import {CollectorMode, SliceMode, ViewPreset} from '../utils/type';
 import styles from './Controls.module.scss';
