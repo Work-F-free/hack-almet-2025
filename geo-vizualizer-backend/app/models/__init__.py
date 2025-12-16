@@ -1,5 +1,4 @@
 
-from app.models.item import Item
 from app.models.well import Well
 from app.models.welltrack import WellTrack
 from app.models.curve import Curve

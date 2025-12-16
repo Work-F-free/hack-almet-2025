@@ -1,6 +1,5 @@
 
 from app.crud import (
-    items,
     wells,
     welltracks,
     curves,
@@ -9,7 +8,6 @@ from app.crud import (
 )
 
 __all__ = [
-    "items",
     "wells",
     "welltracks",
     "curves",
