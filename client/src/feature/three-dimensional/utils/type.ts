@@ -34,3 +34,9 @@ export type Ranges = {
     mdMin: number;
     mdMax: number;
 };
+
+export type CameraState = {
+    alpha: number;
+    beta: number;
+    distance: number;
+};

@@ -26,7 +26,6 @@ type Props = {
 export const ThreeDimensional: React.FC<Props> = ({
     wells = wellsMock,
     collectors = collectorsMock,
-    height = 640,
 }) => {
     const wellNames = useMemo(() => Object.keys(wells), [wells]);
     const ranges = useMemo(() => getRanges(wells), [wells]);
@@ -95,45 +94,45 @@ export const ThreeDimensional: React.FC<Props> = ({
 
     return (
         <div className={styles.root}>
-            <Controls
-                wellNames={wellNames}
-                selectedWell={selectedWell}
-                onWellChange={setSelectedWell}
-                collectorMode={collectorMode}
-                onCollectorModeChange={setCollectorMode}
-                showCollectors={showCollectors}
-                onShowCollectors={setShowCollectors}
-                showSticks={showSticks}
-                onShowSticks={setShowSticks}
-                showHeads={showHeads}
-                onShowHeads={setShowHeads}
-                viewPreset={viewPreset}
-                onViewPreset={setViewPreset}
-                sliceEnabled={sliceEnabled}
-                onSliceEnabled={setSliceEnabled}
-                sliceMode={sliceMode}
-                onSliceMode={setSliceMode}
-                sliceValue={sliceValue}
-                onSliceValue={setSliceValue}
-                sliceMin={sliceMin}
-                sliceMax={sliceMax}
-            />
+            <div className={styles.controls}>
+                <Controls
+                    wellNames={wellNames}
+                    selectedWell={selectedWell}
+                    onWellChange={setSelectedWell}
+                    collectorMode={collectorMode}
+                    onCollectorModeChange={setCollectorMode}
+                    showCollectors={showCollectors}
+                    onShowCollectors={setShowCollectors}
+                    showSticks={showSticks}
+                    onShowSticks={setShowSticks}
+                    showHeads={showHeads}
+                    onShowHeads={setShowHeads}
+                    viewPreset={viewPreset}
+                    onViewPreset={setViewPreset}
+                    sliceEnabled={sliceEnabled}
+                    onSliceEnabled={setSliceEnabled}
+                    sliceMode={sliceMode}
+                    onSliceMode={setSliceMode}
+                    sliceValue={sliceValue}
+                    onSliceValue={setSliceValue}
+                    sliceMin={sliceMin}
+                    sliceMax={sliceMax}
+                />
+            </div>
 
-            <div className={styles.bottom}>
-                <Card className={styles.chartCard}>
-                    <ReactECharts
-                        echarts={echarts}
-                        option={option}
-                        style={{height, width: '100%'}}
-                        notMerge
-                        lazyUpdate
-                        onEvents={onEvents}
-                    />
-                </Card>
+            <Card className={styles.chartCard}>
+                <ReactECharts
+                    echarts={echarts}
+                    option={option}
+                    style={{height: '100%', width: '100%'}}
+                    notMerge
+                    lazyUpdate
+                    onEvents={onEvents}
+                />
+            </Card>
 
-                <div className={styles.proj}>
-                    <Projections wells={wells} collectors={collectors} onPick={setViewPreset} />
-                </div>
+            <div className={styles.proj}>
+                <Projections wells={wells} collectors={collectors} onPick={setViewPreset} />
             </div>
         </div>
     );

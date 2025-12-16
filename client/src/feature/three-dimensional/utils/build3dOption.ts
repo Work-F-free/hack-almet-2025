@@ -1,7 +1,8 @@
+/* eslint-disable complexity */
 import type * as echartsType from 'echarts';
 import 'echarts-gl';
 
-import {CollectorMode, CollectorRadial, SliceMode, ViewPreset, Wells} from './type';
+import type {CollectorMode, CollectorRadial, Ranges, SliceMode, ViewPreset, Wells} from './type';
 import {getRanges} from './math';
 import {isInsideCollector, makeCollectorBlobSeries, slicePoints, splitRuns} from './collectors';
 
@@ -21,6 +22,11 @@ type Params = {
     sliceValue: number;
 
     viewPreset: ViewPreset;
+
+    effects?: boolean;
+    disableInternalControls?: boolean;
+
+    rangesOverride?: Ranges;
 };
 
 const viewAngles = (preset: ViewPreset) => {
@@ -28,9 +34,9 @@ const viewAngles = (preset: ViewPreset) => {
         case 'xy':
             return {alpha: 90, beta: 0};
         case 'xz':
-            return {alpha: 0, beta: 0};
+            return {alpha: 0.1, beta: 0};
         case 'yz':
-            return {alpha: 0, beta: 90};
+            return {alpha: 0.1, beta: 90};
         default:
             return {alpha: 35, beta: 25};
     }
@@ -48,17 +54,19 @@ export const build3dOption = ({
     sliceMode,
     sliceValue,
     viewPreset,
+    effects = true,
+    disableInternalControls = false,
+    rangesOverride,
 }: Params): echartsType.EChartsOption => {
     const names = Object.keys(wells);
-    const r = getRanges(wells);
+    const r = rangesOverride ?? getRanges(wells);
 
     const legendSelected: Record<string, boolean> = {};
     for (const n of names) legendSelected[n] = selectedWell ? n === selectedWell : true;
 
     const series: any[] = [];
-    const wellSeriesIndices: number[] = []; // ✅ только на эти серии будет visualMap
+    const wellSeriesIndices: number[] = [];
 
-    // slice plane (Z)
     if (sliceEnabled && sliceMode === 'z') {
         series.push({
             name: 'Slice plane',
@@ -91,7 +99,6 @@ export const build3dOption = ({
 
         const pts = slicePoints(rawPts, sliceEnabled, sliceMode, sliceValue);
 
-        // main well line
         const idx = series.length;
         series.push({
             name,
@@ -162,7 +169,11 @@ export const build3dOption = ({
         }
     }
 
-    const {alpha, beta} = viewAngles(viewPreset);
+    const presetAngles = viewAngles(viewPreset);
+
+    const sens = disableInternalControls
+        ? {rotateSensitivity: 0, zoomSensitivity: 0, panSensitivity: 0}
+        : {rotateSensitivity: 1.1, zoomSensitivity: 1.2, panSensitivity: 0.9};
 
     return {
         backgroundColor: '#ffffff',
@@ -180,12 +191,10 @@ export const build3dOption = ({
             borderColor: 'rgba(17,24,39,0.15)',
             textStyle: {color: '#111827'},
         },
-
-        // ✅ visualMap только на линии скважин, коллекторы не перекрашиваются
         visualMap: {
             show: true,
             type: 'continuous',
-            dimension: 3, // md
+            dimension: 3,
             seriesIndex: wellSeriesIndices,
             min: r.mdMin,
             max: r.mdMax,
@@ -195,11 +204,9 @@ export const build3dOption = ({
             left: 10,
             bottom: 10,
         },
-
         xAxis3D: {type: 'value', min: r.xMin, max: r.xMax, name: 'X'},
         yAxis3D: {type: 'value', min: r.yMin, max: r.yMax, name: 'Y'},
         zAxis3D: {type: 'value', min: r.zMin, max: r.zMax, name: 'Z'},
-
         grid3D: {
             boxWidth: 180,
             boxDepth: 180,
@@ -209,25 +216,24 @@ export const build3dOption = ({
                 projection: 'perspective',
                 autoRotate: false,
                 damping: 0.92,
-                rotateSensitivity: 1.1,
-                zoomSensitivity: 1.2,
-                panSensitivity: 0.9,
                 distance: 250,
-                alpha,
-                beta,
+                alpha: presetAngles.alpha,
+                beta: presetAngles.beta,
+                ...sens,
             },
             light: {
                 main: {intensity: 1.1, shadow: true, shadowQuality: 'medium'},
                 ambient: {intensity: 0.55},
             },
-            postEffect: {
-                enable: true,
-                FXAA: {enable: true},
-                SSAO: {enable: true, intensity: 0.7, radius: 3, quality: 'medium'},
-            },
-            temporalSuperSampling: {enable: true},
+            postEffect: effects
+                ? {
+                      enable: true,
+                      FXAA: {enable: true},
+                      SSAO: {enable: true, intensity: 0.7, radius: 3, quality: 'medium'},
+                  }
+                : {enable: false},
+            temporalSuperSampling: effects ? {enable: true} : {enable: false},
         },
-
         series,
     };
 };

@@ -1,20 +1,35 @@
 .root {
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
+
     display: grid;
+    grid-template-rows: auto 1fr auto; // controls, chart, projections
     gap: 12px;
+    overflow: hidden;
 }
 
-.bottom {
-    display: grid;
-    gap: 12px;
+.controls {
+    min-width: 0;
 }
 
 .chartCard {
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
     padding: 8px;
     border-radius: 12px;
-    overflow: hidden;
-    height: 680px;
 }
 
 .proj {
-    margin-top: 2px;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+@media (max-width: 960px) {
+    .root {
+        grid-template-rows: auto 1fr auto;
+    }
 }

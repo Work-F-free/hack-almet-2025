@@ -1,4 +1,24 @@
 .dashboard {
-    padding: 16px;
-    height: calc(100vh - 24px);
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
+
+    overflow: hidden;
+
+    display: grid;
+    grid-template-rows: 1fr;
+}
+
+.content {
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
+
+    overflow: hidden;
+
+    display: grid;
+    grid-template-rows: 1fr;
 }

@@ -3,9 +3,9 @@ import {matchPath, useLocation, useNavigate} from 'react-router';
 import {AsideHeader, AsideHeaderProps, MenuItem} from '@gravity-ui/navigation';
 import {TerminalLine} from '@gravity-ui/icons';
 import {AppMenuItem, menuItems} from '@/config/menu';
+import {Paths} from '@/config/paths';
 
 import cls from './layout.module.scss';
-import {Paths} from '@/config/paths';
 
 export const RootLayout: FC<PropsWithChildren> = ({children}) => {
     const navigate = useNavigate();
@@ -22,9 +22,7 @@ export const RootLayout: FC<PropsWithChildren> = ({children}) => {
             title: item.title,
             icon: item.icon,
             current: isActive,
-            onItemClick: () => {
-                navigate(item.path);
-            },
+            onItemClick: () => navigate(item.path),
         };
     };
 
@@ -35,13 +33,21 @@ export const RootLayout: FC<PropsWithChildren> = ({children}) => {
             onClick: () => navigate(Paths.home.path),
         },
 
-        renderContent: () => <div className={cls.rootLayout_wrapper}>{children}</div>,
+        renderContent: () => (
+            <div className={cls.rootLayout_wrapper}>
+                <div className={cls.rootLayout_content}>{children}</div>
+            </div>
+        ),
 
         menuItems: menuItems.map(convertToAsideMenuItem),
 
-        compact: compact,
+        compact,
         onChangeCompact: setCompact,
     };
 
-    return <AsideHeader {...asidePropsData} />;
+    return (
+        <div className={cls.shell}>
+            <AsideHeader {...asidePropsData} />
+        </div>
+    );
 };

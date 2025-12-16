@@ -16,6 +16,11 @@ export const createAppRouter = () =>
             path: Paths.upload.path,
             lazy: () => import('./routing/upload').then((m) => ({Component: m.default})),
         },
+        {
+            path: Paths.comparison.path,
+            lazy: () =>
+                import('./routing/comparison/comparison').then((m) => ({Component: m.default})),
+        },
     ]);
 
 export const AppRouter = () => {

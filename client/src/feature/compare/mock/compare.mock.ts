@@ -1,6 +1,6 @@
-import {WellPoint, Wells} from '../utils/type';
+import {WellPoint, Wells} from '@/feature/three-dimensional/utils/type';
 
-const base: WellPoint[] = [
+const baseReal: WellPoint[] = [
     [7131.91, 75939.7, 71.62, 0.0],
     [7131.88182, 75939.60096, 61.62053, 10.0],
     [7131.84577, 75939.47422, 51.62141, 20.0],
@@ -24,21 +24,18 @@ const base: WellPoint[] = [
     [7130.80096, 75935.80152, -128.33448, 200.0],
 ];
 
-const makeWell = (name: string, dx: number, dy: number, bend = 0.0): [string, WellPoint[]] => {
-    const pts = base.map(([x, y, z, md], i) => {
-        const t = i / Math.max(1, base.length - 1);
-        const bx = Math.sin(t * Math.PI * 2) * bend;
-        const by = Math.cos(t * Math.PI * 2) * bend;
-        return [x + dx + bx, y + dy + by, z, md] as WellPoint;
-    });
-    return [name, pts];
+const basePred: WellPoint[] = baseReal.map(([x, y, z, md], i) => {
+    const t = i / Math.max(1, baseReal.length - 1);
+    const dx = Math.sin(t * Math.PI * 2) * 0.9;
+    const dy = Math.cos(t * Math.PI * 2) * 0.9;
+    const dz = Math.sin(t * Math.PI) * 1.2;
+    return [x + dx, y + dy, z + dz, md] as WellPoint;
+});
+
+export const realWellsMock: Wells = {
+    WELL_034_REAL: baseReal,
 };
 
-export const wellsMock: Wells = Object.fromEntries([
-    makeWell('WELL_034', 0, 0, 0.25),
-    makeWell('WELL_035', 14, -22, 0.35),
-    makeWell('WELL_036', -18, -10, 0.15),
-    makeWell('WELL_037', 28, 16, 0.45),
-    makeWell('WELL_038', -26, 20, 0.3),
-    makeWell('WELL_039', 40, -6, 0.5),
-]);
+export const predictedWellsMock: Wells = {
+    WELL_034_PRED: basePred,
+};
