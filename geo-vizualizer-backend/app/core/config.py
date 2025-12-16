@@ -1,48 +1,37 @@
-import os
-from functools import lru_cache
 from pathlib import Path
-from typing import Any
-
+from string import Template
 import yaml
-from pydantic import BaseModel
+import os
 
+class Settings:
+    def __init__(self, settings_path: str = "/app/config/settings.yaml"):
+        self.settings_path = Path(settings_path)
+        self._load_yaml()
 
-class Settings(BaseModel):
-    PROJECT_NAME: str
-    VERSION: str
-    API_V1_STR: str
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_HOST: str
-    DB_PORT: int
-    DB_NAME: str
-    DB_POOL_SIZE: int
-    DB_MAX_OVERFLOW: int
-    DB_POOL_TIMEOUT: int
-    FRONTEND_HOST: str
+    def _load_yaml(self):
+        # читаем YAML-шаблон и подставляем env переменные
+        with open(self.settings_path) as f:
+            content = Template(f.read()).safe_substitute(os.environ)
+        data = yaml.safe_load(content)
+
+        self.PROJECT_NAME = data["PROJECT_NAME"]
+        self.VERSION = data["VERSION"]
+        self.API_V1_STR = data["API_V1_STR"]
+        self.DB_USER = data["DB_USER"]
+        self.DB_PASSWORD = data["DB_PASSWORD"]
+        self.DB_HOST = data["DB_HOST"]
+        self.DB_PORT = data["DB_PORT"]
+        self.DB_NAME = data["DB_NAME"]
+        self.DB_POOL_SIZE = data["DB_POOL_SIZE"]
+        self.DB_MAX_OVERFLOW = data["DB_MAX_OVERFLOW"]
+        self.DB_POOL_TIMEOUT = data["DB_POOL_TIMEOUT"]
+        self.FRONTEND_HOST = data["FRONTEND_HOST"]
 
     @property
     def DATABASE_URL(self) -> str:
+        # формируем только после инициализации объекта
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 
-def _load_yaml(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
-
-
-@lru_cache()
-def get_settings() -> Settings:
-    """
-    Load settings from YAML file.
-    Override path via CONFIG_FILE env var if needed.
-    """
-    default_path = Path(__file__).resolve().parents[2] / "config" / "settings.yaml"
-    config_path = Path(os.getenv("CONFIG_FILE", default_path))
-    data = _load_yaml(config_path)
-    return Settings(**data)
-
-
-settings = get_settings()
-
-
+# создаём единственный объект настроек
+settings = Settings()
