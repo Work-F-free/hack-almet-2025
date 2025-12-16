@@ -3,7 +3,7 @@ VERSION: "0.1.0"
 API_V1_STR: "/api/v1"
 DB_USER: "app"
 DB_PASSWORD: "app"
-DB_HOST: "db"
+DB_HOST: "localhost"
 DB_PORT: 5432
 DB_NAME: "app"
 DB_POOL_SIZE: 5
