@@ -1,7 +1,6 @@
-import { FC, PropsWithChildren, useCallback, useState } from 'react';
+import {FC} from 'react';
 import cls from './file-drop-zone.module.scss';
-import { CloudArrowUpIn, File, Xmark } from '@gravity-ui/icons';
-import { Button, FilePreview, Icon, Progress } from '@gravity-ui/uikit';
+import {CloudArrowUpIn} from '@gravity-ui/icons';
 
 interface FileDropZoneProps {
     isDropped: boolean;
