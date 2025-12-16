@@ -4,10 +4,21 @@ import {UploadedFileList} from '../file-list.tsx';
 import {useFileUpload} from '../../model/use-file-upload.js';
 import {UploadStatusAlert} from '../upload-alert/upload-status-alert.js';
 import cls from './file-upload.module.scss';
+import {Switch} from '@gravity-ui/uikit';
 
 export const FileUpload: FC<PropsWithChildren> = ({children}) => {
-    const {isDropped, items, stats, onDragOver, onDragLeave, onDrop, retryFile, retryAllErrors} =
-        useFileUpload(3);
+    const {
+        isDropped,
+        isPredicted,
+        items,
+        stats,
+        setIsPredicted,
+        onDragOver,
+        onDragLeave,
+        onDrop,
+        retryFile,
+        retryAllErrors,
+    } = useFileUpload(3);
     const alertNode = useMemo(
         () => (
             <UploadStatusAlert
@@ -31,6 +42,10 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
                 onDrop={onDrop}
             />
 
+            <Switch onUpdate={(checked) => setIsPredicted(checked)} checked={isPredicted}>
+                Предсказанные данные
+            </Switch>
+
             {alertNode}
 
             <div className={cls.list}>
@@ -39,19 +54,5 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
 
             {children}
         </div>
-        // <>
-        //     <FileDropZone
-        //         isDropped={isDropped}
-        //         onDragOver={onDragOver}
-        //         onDragLeave={onDragLeave}
-        //         onDrop={onDrop}
-        //     />
-
-        //     {alertNode}
-
-        //     {items.length > 0 && <UploadedFileList files={items} onFileRetry={retryFile} />}
-
-        //     {children}
-        // </>
     );
 };
