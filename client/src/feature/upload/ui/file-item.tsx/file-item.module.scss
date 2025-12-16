@@ -11,7 +11,7 @@
 
      &__upload {
          width: 100%;
-         max-width: 450px;
+         max-width: 90%;
          display: flex;
          flex-direction: column;
          gap: 10px;
@@ -34,7 +34,7 @@
          color: #0166CC;
 
          text-overflow: ellipsis;
-         max-width: 250px;
+         max-width: 450px;
          white-space: nowrap;
          overflow: hidden;
          margin-right: 6px;
@@ -50,16 +50,4 @@
      &__progress {
          width: 100%;
      }
-
-     &__delete {
-         opacity: 0;
-         transition: opacity 0.2s ease-in-out;
-     }
-
-     &:hover {
-         .file__delete {
-             opacity: 1;
-         }
-     }
-
  }
