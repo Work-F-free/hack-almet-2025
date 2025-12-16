@@ -4,15 +4,14 @@ import {UploadedFileList} from '../file-list.tsx';
 import {useFileUpload} from '../../model/use-file-upload.js';
 import {UploadStatusAlert} from '../upload-alert/upload-status-alert.js';
 import cls from './file-upload.module.scss';
-import {Switch} from '@gravity-ui/uikit';
+import {RadioGroup, RadioGroupOption} from '@gravity-ui/uikit';
 
 export const FileUpload: FC<PropsWithChildren> = ({children}) => {
     const {
         isDropped,
-        isPredicted,
         items,
         stats,
-        setIsPredicted,
+        setSelected,
         onDragOver,
         onDragLeave,
         onDrop,
@@ -33,6 +32,14 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
         [stats, retryAllErrors],
     );
 
+    const options: RadioGroupOption[] = [
+        {value: 'fact', content: 'Фактические данные'},
+        {value: 'predict', content: 'Предсказанные данные'},
+        {value: 'wellTrack', content: 'WellTrack'},
+        {value: 'formationThickness', content: 'Толщина пласта'},
+        {value: 'effectiveFormationThickness ', content: 'Эффективная толщина пласта'},
+    ];
+
     return (
         <div className={cls.root}>
             <FileDropZone
@@ -42,9 +49,13 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
                 onDrop={onDrop}
             />
 
-            <Switch onUpdate={(checked) => setIsPredicted(checked)} checked={isPredicted}>
-                Предсказанные данные
-            </Switch>
+            <RadioGroup
+                onUpdate={(selected) => setSelected(selected)}
+                name="datas"
+                defaultValue={options[0].value}
+                options={options}
+                size="l"
+            />
 
             {alertNode}
 

@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useRef} from 'react';
 import {useMutation} from '@tanstack/react-query';
-import {CoreServiceAPI} from '@/config/api';
+import {FileServiceAPI} from '@/config/api';
 import {useToaster} from '@gravity-ui/uikit';
 
 export type UploadStatus = 'queued' | 'uploading' | 'uploaded' | 'error';
@@ -17,14 +17,22 @@ export function useUploadQueue(
     items: UploadItem[],
     setItems: React.Dispatch<React.SetStateAction<UploadItem[]>>,
     concurrency = 3,
-    isPredicted,
+    selected,
 ) {
-    const api = new CoreServiceAPI();
+    const api = new FileServiceAPI();
     const {add: addToast} = useToaster();
 
     const mutation = useMutation({
         mutationFn: async ({file}: {id: string; file: File}) =>
-            isPredicted ? api.predictedFileUploading(file) : api.fileUploading(file),
+            selected === 'fact'
+                ? api.fileUploading(file)
+                : selected === 'predict'
+                  ? api.predictedFileUploading(file)
+                  : selected === 'wellTrack'
+                    ? api.wellTracksUploading(file)
+                    : selected === 'formationThickness'
+                      ? api.formationThicknessUploading(file)
+                      : api.effectiveFormationThicknessUploading(file),
     });
 
     const timersRef = useRef<Map<string, number>>(new Map());

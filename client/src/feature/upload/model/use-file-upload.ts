@@ -10,10 +10,10 @@ const makeId = () =>
 export const useFileUpload = (concurrency = 3) => {
     const {add} = useToaster();
     const [isDropped, setIsDropped] = useState(false);
-    const [isPredicted, setIsPredicted] = useState(false);
+    const [selected, setSelected] = useState('fact');
     const [items, setItems] = useState<UploadItem[]>([]);
 
-    const {markRemoved} = useUploadQueue(items, setItems, concurrency, isPredicted);
+    const {markRemoved} = useUploadQueue(items, setItems, concurrency, selected);
 
     const onDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -111,8 +111,7 @@ export const useFileUpload = (concurrency = 3) => {
     return {
         isDropped,
         items,
-        stats,
-        isPredicted,
+        stats, 
 
         onDragOver,
         onDragLeave,
@@ -120,6 +119,6 @@ export const useFileUpload = (concurrency = 3) => {
         removeFile,
         retryFile,
         retryAllErrors,
-        setIsPredicted,
+        setSelected,
     };
 };
