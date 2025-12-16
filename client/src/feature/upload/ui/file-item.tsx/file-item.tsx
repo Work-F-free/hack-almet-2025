@@ -2,7 +2,7 @@ import {FC} from 'react';
 import cls from './file-item.module.scss';
 import {ArrowRotateRight, File as FileIcon} from '@gravity-ui/icons';
 import {Button, Icon, Progress} from '@gravity-ui/uikit';
-import {UploadStatus} from './upload-queue';
+import {UploadStatus} from '../../model/upload-queue';
 
 interface FileItemProps {
     id: string;

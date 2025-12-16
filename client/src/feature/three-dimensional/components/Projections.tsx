@@ -5,7 +5,7 @@ import * as echarts from 'echarts';
 import {buildXY, buildXZ, buildYZ} from '../utils/buildProjectionOptions';
 
 import styles from './Projections.module.scss';
-import {CollectorRadial, ViewPreset, Wells} from '../utils';
+import {CollectorRadial, ViewPreset, Wells} from '../utils/type';
 
 type Props = {
     wells: Wells;
