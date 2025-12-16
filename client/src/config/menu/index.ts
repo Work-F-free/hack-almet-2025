@@ -1,5 +1,5 @@
 import {MenuItem} from '@gravity-ui/navigation';
-import {ChartAreaStacked, House} from '@gravity-ui/icons';
+import {ChartAreaStacked, CloudArrowUpIn, House} from '@gravity-ui/icons';
 import {Paths} from '../paths';
 
 export type AppMenuItem = MenuItem & {
@@ -18,5 +18,11 @@ export const menuItems: Array<AppMenuItem> = [
         title: 'Дашборды',
         icon: ChartAreaStacked,
         path: Paths.dashboard.path,
+    },
+    {
+        id: 'upload',
+        title: 'Загрузка',
+        icon: CloudArrowUpIn,
+        path: Paths.upload.path,
     },
 ];
