@@ -4,10 +4,20 @@ import {UploadedFileList} from '../file-list.tsx';
 import {useFileUpload} from '../../model/use-file-upload.js';
 import {UploadStatusAlert} from '../upload-alert/upload-status-alert.js';
 import cls from './file-upload.module.scss';
+import {RadioGroup, RadioGroupOption} from '@gravity-ui/uikit';
 
 export const FileUpload: FC<PropsWithChildren> = ({children}) => {
-    const {isDropped, items, stats, onDragOver, onDragLeave, onDrop, retryFile, retryAllErrors} =
-        useFileUpload(3);
+    const {
+        isDropped,
+        items,
+        stats,
+        setSelected,
+        onDragOver,
+        onDragLeave,
+        onDrop,
+        retryFile,
+        retryAllErrors,
+    } = useFileUpload(3);
     const alertNode = useMemo(
         () => (
             <UploadStatusAlert
@@ -22,6 +32,14 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
         [stats, retryAllErrors],
     );
 
+    const options: RadioGroupOption[] = [
+        {value: 'fact', content: 'Фактические данные'},
+        {value: 'predict', content: 'Предсказанные данные'},
+        {value: 'wellTrack', content: 'WellTrack'},
+        {value: 'formationThickness', content: 'Толщина пласта'},
+        {value: 'effectiveFormationThickness ', content: 'Эффективная толщина пласта'},
+    ];
+
     return (
         <div className={cls.root}>
             <FileDropZone
@@ -29,6 +47,14 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
                 onDragOver={onDragOver}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
+            />
+
+            <RadioGroup
+                onUpdate={(selected) => setSelected(selected)}
+                name="datas"
+                defaultValue={options[0].value}
+                options={options}
+                size="l"
             />
 
             {alertNode}
@@ -39,19 +65,5 @@ export const FileUpload: FC<PropsWithChildren> = ({children}) => {
 
             {children}
         </div>
-        // <>
-        //     <FileDropZone
-        //         isDropped={isDropped}
-        //         onDragOver={onDragOver}
-        //         onDragLeave={onDragLeave}
-        //         onDrop={onDrop}
-        //     />
-
-        //     {alertNode}
-
-        //     {items.length > 0 && <UploadedFileList files={items} onFileRetry={retryFile} />}
-
-        //     {children}
-        // </>
     );
 };

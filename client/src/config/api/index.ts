@@ -1,3 +1,3 @@
-import {CoreServiceAPI} from './CoreServiceAPI';
+import {FileServiceAPI} from './FileServiceAPI';
 
-export {CoreServiceAPI};
+export {FileServiceAPI};

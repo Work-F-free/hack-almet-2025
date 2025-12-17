@@ -1,20 +1,19 @@
 import {useCallback, useMemo, useState} from 'react';
 import {UploadItem, useUploadQueue} from './upload-queue';
+import {useToaster} from '@gravity-ui/uikit';
 
-const isValid = (file: File) =>
-    file.type === 'text/csv' ||
-    file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-    file.name.endsWith('.txt') ||
-    file.name.endsWith('.las');
+const isValid = (file: File) => file.name.endsWith('.txt') || file.name.endsWith('.las');
 
 const makeId = () =>
     crypto?.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
 
 export const useFileUpload = (concurrency = 3) => {
+    const {add} = useToaster();
     const [isDropped, setIsDropped] = useState(false);
+    const [selected, setSelected] = useState('fact');
     const [items, setItems] = useState<UploadItem[]>([]);
 
-    const {markRemoved} = useUploadQueue(items, setItems, concurrency);
+    const {markRemoved} = useUploadQueue(items, setItems, concurrency, selected);
 
     const onDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -32,6 +31,17 @@ export const useFileUpload = (concurrency = 3) => {
 
         const droppedFiles = Array.from(e.dataTransfer.files);
         const validFiles = droppedFiles.filter(isValid);
+
+        if (droppedFiles.length !== validFiles.length) {
+            add({
+                title: 'Неподдерживаемые файлы',
+                name: 'invalid-extension',
+                theme: 'danger',
+                content: `${
+                    droppedFiles.length - validFiles.length
+                } файл(ов) имеет неподдерживаемое расширение. Поддерживаются только .txt и .las`,
+            });
+        }
 
         const newItems: UploadItem[] = validFiles.map((file) => ({
             id: makeId(),
@@ -101,7 +111,7 @@ export const useFileUpload = (concurrency = 3) => {
     return {
         isDropped,
         items,
-        stats,
+        stats, 
 
         onDragOver,
         onDragLeave,
@@ -109,5 +119,6 @@ export const useFileUpload = (concurrency = 3) => {
         removeFile,
         retryFile,
         retryAllErrors,
+        setSelected,
     };
 };
