@@ -4,6 +4,7 @@ from app.crud import (
     welltracks,
     curves,
     formation_thickness,
+    interpolated_curves,
     effective_formation_thickness,
 )
 
@@ -12,6 +13,7 @@ __all__ = [
     "welltracks",
     "curves",
     "formation_thickness",
+    "interpolated_curves",
     "effective_formation_thickness",
 ]
 
