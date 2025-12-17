@@ -10,6 +10,15 @@ async def get_multi(db: AsyncSession) -> Sequence[Curve]:
     result = await db.execute(select(Curve).order_by(Curve.id))
     return result.scalars().all()
 
+async def get_by_well_id(db: AsyncSession, well_id: int) -> Sequence[Curve]:
+    """
+    Получает все записи WellTrack для заданного well_id.
+    """
+    result = await db.execute(
+        select(Curve).where(Curve.well_id == well_id).order_by(Curve.id)
+    )
+    return result.scalars().all()
+
 
 async def replace_for_well(
     db: AsyncSession,

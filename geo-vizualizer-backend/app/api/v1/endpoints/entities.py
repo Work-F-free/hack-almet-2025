@@ -18,6 +18,13 @@ router = APIRouter()
 async def list_wells(db: AsyncSession = Depends(deps.get_db)):
     return await crud.wells.get_multi(db)
 
+@router.get("/wells/{well_id}/welltrack", response_model=List[welltrack_schema.WellTrack])
+async def get_welltrack(well_id: int, db: AsyncSession = Depends(deps.get_db)):
+    return await crud.welltracks.get_by_well_id(db, well_id)
+
+@router.get("/wells/{well_id}/curve", response_model=List[curve_schema.Curve])
+async def get_welltrack(well_id: int, db: AsyncSession = Depends(deps.get_db)):
+    return await crud.curves.get_by_well_id(db, well_id)
 
 @router.get("/welltracks", response_model=List[welltrack_schema.WellTrack])
 async def list_welltracks(db: AsyncSession = Depends(deps.get_db)):
