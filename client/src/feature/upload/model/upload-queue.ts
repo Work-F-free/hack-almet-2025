@@ -17,7 +17,7 @@ export function useUploadQueue(
     items: UploadItem[],
     setItems: React.Dispatch<React.SetStateAction<UploadItem[]>>,
     concurrency = 3,
-    selected,
+    selected: string,
 ) {
     const api = new FileServiceAPI();
     const {add: addToast} = useToaster();
